@@ -13,7 +13,10 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -29,14 +32,15 @@ app.get('/api/health', (req, res) => {
 
 // Connect to MongoDB
 const connectDB = async () => {
-  const mongoUri = process.env.MONGODB_URI;
-  if (!mongoUri) {
-    console.error('❌ MONGODB_URI is not set in environment variables!');
-    process.exit(1);
-  }
   try {
+    const mongoUri = process.env.MONGODB_URI;
+    if (!mongoUri) {
+      console.error('❌ MONGODB_URI is not set in environment variables!');
+      process.exit(1);
+    }
     await mongoose.connect(mongoUri);
     console.log('✅ Connected to MongoDB');
+    
     // Create admin user if it doesn't exist
     await createAdminUser();
   } catch (error) {
