@@ -29,10 +29,14 @@ app.get('/api/health', (req, res) => {
 
 // Connect to MongoDB
 const connectDB = async () => {
+  const mongoUri = process.env.MONGODB_URI;
+  if (!mongoUri) {
+    console.error('❌ MONGODB_URI is not set in environment variables!');
+    process.exit(1);
+  }
   try {
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/bridgeb');
+    await mongoose.connect(mongoUri);
     console.log('✅ Connected to MongoDB');
-    
     // Create admin user if it doesn't exist
     await createAdminUser();
   } catch (error) {
@@ -44,10 +48,10 @@ const connectDB = async () => {
 // Start server
 const startServer = async () => {
   await connectDB();
-  
+
   app.listen(PORT, () => {
     console.log(`🚀 BRIDGEB Server running on port ${PORT}`);
-    console.log(`📱 API available at http://localhost:${PORT}/api`);
+    console.log(`📱 API available at /api`);
   });
 };
 
